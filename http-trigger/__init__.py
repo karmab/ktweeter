@@ -1,39 +1,28 @@
 import logging
 
 import azure.functions as func
-import twitter 
 import traceback
-import os
-
-def _envRead(key):
-    return os.environ[key]
+from .function import on_event
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    charLimit = 230
-    consumer_key        = _envRead('consumer_key')
-    consumer_secret     = _envRead('consumer_secret')
-    access_token        = _envRead('access_token')
-    access_token_secret = _envRead('access_token_secret')    
 
-    try:    
-        if req.method == "GET": 
-            return func.HttpResponse("It works.",status_code=200)
-        
-        twitterClient = twitter.Api(consumer_key,
-                        consumer_secret,
-                        access_token,
-                        access_token_secret)
-        
-        # logging.info("Credential verification: {}".format(twitterClient.VerifyCredentials()))
+    try:
+        if req.method == "GET":
+            return func.HttpResponse(on_event("health", None),status_code=200)
+
         jsonEvent = req.get_json()
-        if jsonEvent:
-            logging.info(jsonEvent)
-            message = jsonEvent['lastTimestamp'] + ' : ' + jsonEvent['message']
-            message = (message[:charLimit-3] + "...") if len(message) > charLimit else message
-            twitterClient.PostUpdate(message)
-            return func.HttpResponse("Posted.",status_code=200)
+        logging.info(jsonEvent)
+        if 'Created Migration' in jsonEvent['message']:
+            event = 'Migration'
         else:
-            raise Exception("No content to post or unknown error for request: {}".format(req))
+            event = 'Unknown'
+
+        response = on_event(event, jsonEvent)
+
+        if not response:
+            return func.HttpResponse("Ignored.", status_code=200)
+        else:
+            return func.HttpResponse(on_event(event, jsonEvent), status_code=200)
     except Exception as e:
         message = "Error processing event or posting update.\nMessage: {}".format(e)
         traceback.print_exc()

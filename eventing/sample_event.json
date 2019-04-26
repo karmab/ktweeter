@@ -15,7 +15,7 @@
       "resourceVersion":"272169"
    },
    "reason":"Updated",
-   "message":"Updated status for VirtualService 'knative-serving'/'route-059ca86d-565b-11e9-987e-080027092e8c'",
+   "message":"Created Migration for testing twitter updates",
    "source":{
       "component":"clusteringress-controller"
    },
