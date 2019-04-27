@@ -7,22 +7,7 @@ from .function import on_event
 def main(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
-        if req.method == "GET":
-            return func.HttpResponse(on_event("health", None),status_code=200)
-
-        jsonEvent = req.get_json()
-        logging.info(jsonEvent)
-        if 'Created Migration' in jsonEvent['message']:
-            event = 'VM'
-        else:
-            event = 'Unknown'
-
-        response = on_event(event, jsonEvent)
-
-        if not response:
-            return func.HttpResponse("Ignored.", status_code=200)
-        else:
-            return func.HttpResponse(on_event(event, jsonEvent), status_code=200)
+        return on_event(req)
     except Exception as e:
         message = "Error processing event or posting update.\nMessage: {}".format(e)
         traceback.print_exc()
