@@ -13,7 +13,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         jsonEvent = req.get_json()
         logging.info(jsonEvent)
         if 'Created Migration' in jsonEvent['message']:
-            event = 'Migration'
+            event = 'VM'
         else:
             event = 'Unknown'
 
