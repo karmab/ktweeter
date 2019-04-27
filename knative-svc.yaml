@@ -1,0 +1,40 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: ktweeter
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            env:
+            - name: consumer_key
+              valueFrom:
+                secretKeyRef:
+                  key: consumer_key
+                  name: twitter.creds
+            - name: consumer_secret
+              valueFrom:
+                secretKeyRef:
+                  key: consumer_secret
+                  name: twitter.creds
+            - name: access_token
+              valueFrom:
+                secretKeyRef:
+                  key: access_token
+                  name: twitter.creds
+            - name: access_token_secret
+              valueFrom:
+                secretKeyRef:
+                  key: access_token_secret
+                  name: twitter.creds
+            image: docker.io/bmozaffa/ktweeter:1.0
+            livenessProbe:
+              failureThreshold: 100
+              httpGet:
+                path: /api/http-trigger
+            readinessProbe:
+              failureThreshold: 100
+              httpGet:
+                path: /api/http-trigger
