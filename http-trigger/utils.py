@@ -15,8 +15,9 @@ def respond(body: str) -> func.HttpResponse:
 
 def source(req: func.HttpRequest) -> str:
     jsonEvent = req.get_json()
+    logging.info("karmab/kwteeter handling")
     logging.info(jsonEvent)
-    if 'Created Migration' in jsonEvent['message']:
+    if 'migration' in jsonEvent['message'].lower():
         return "VM"
     else:
         return "Unknown"
@@ -24,7 +25,7 @@ def source(req: func.HttpRequest) -> str:
 
 def event_type(req: func.HttpRequest) -> str:
     jsonEvent = req.get_json()
-    if 'Created Migration' in jsonEvent['message']:
+    if 'migration' in jsonEvent['message'].lower():
         return "Migration"
     else:
         return "Unknown"
